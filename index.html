@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tact Target Crafts | Precision Engineering</title>
+  <meta name="description" content="Explore cardboard target blueprints and LEGO MOC assemblies with interactive step-by-step guides and a virtual physics target testing sandbox.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['Space Grotesk', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            zinc: {
+              950: '#09090b',
+              900: '#18181b',
+              850: '#1c1c1f',
+              800: '#27272a',
+              750: '#2d2d30',
+              700: '#3f3f46',
+              600: '#52525b',
+              500: '#71717a',
+              400: '#a1a1aa',
+              300: '#d4d4d8',
+              200: '#e4e4e7',
+              100: '#f4f4f5',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- ═══ BACKGROUND PARTICLE CANVAS ═══ -->
+  <canvas id="bg-particle-canvas" aria-hidden="true"></canvas>
+
+
+  <!-- ═══ STICKY HEADER ═══ -->
+  <header id="workshop-header">
+    <div class="header-container">
+      <!-- Brand -->
+      <div class="header-brand">
+        <span class="logo-box">
+          <svg class="icon icon-target" viewBox="0 0 24 24" width="20" height="20">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="6"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </span>
+        <div class="brand-text">
+          <h1>Tact Target Crafts</h1>
+          <p class="brand-subtitle">WORKSPACE &amp; PLAYGROUND</p>
+        </div>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <button id="btn-factory-reset" class="btn btn-secondary hidden" title="Reset Workspace to Defaults">
+          <svg viewBox="0 0 24 24" class="icon" width="14" height="14">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+          <span class="btn-text">Reset Workspace</span>
+        </button>
+        <button id="btn-toggle-admin-mode" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" class="icon" width="14" height="14">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span id="admin-toggle-text">ENTER CREATOR VIEW</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main-layout">
+
+    <!-- ── Hero Banner ── -->
+    <section class="hero-section reveal-on-scroll">
+      <!-- Decorative background text -->
+      <div class="hero-bg-text" aria-hidden="true">CRAFT</div>
+
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="eyebrow-pill">
+            <svg viewBox="0 0 24 24" class="icon-small" width="12" height="12">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span id="hero-eyebrow-text">Precision Engineering</span>
+          </span>
+        </div>
+
+        <h2 class="hero-heading">
+          <span id="hero-heading-main">Craft. Targets.</span><br>
+          <span id="hero-heading-accent" class="hero-heading-accent">Physics Sandbox.</span>
+        </h2>
+        <p id="hero-desc" class="hero-desc">Explore custom cardboard blueprints, laser-cut card templates, and LEGO MOC assemblies designed for targeting and mechanical setups. Walk through interactive assembly diagrams or virtual shoot test target hinges instantly.</p>
+
+        <div class="hero-badges">
+          <span class="badge badge-pill">
+            <svg viewBox="0 0 24 24" class="icon-small" width="14" height="14">
+              <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+            </svg>
+            <span id="hero-badge-1">Free PDF Blueprints</span>
+          </span>
+          <span class="badge badge-pill">
+            <svg viewBox="0 0 24 24" class="icon-small" width="14" height="14">
+              <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/>
+              <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/>
+              <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>
+            </svg>
+            <span id="hero-badge-2">LEGO MOC Dimensions</span>
+          </span>
+          <span class="badge badge-pill">
+            <svg viewBox="0 0 24 24" class="icon-small" width="14" height="14">
+              <path d="m15 12-9.373 9.373a1 1 0 0 1-3.001-3L12 9"/>
+              <path d="m18 15 4-4"/>
+              <path d="m21.5 11.5-1.914-1.914A2 2 0 0 1 19 8.172v-.344a2 2 0 0 0-.586-1.414l-1.657-1.657A6 6 0 0 0 12.516 3H9l1.243 1.243A6 6 0 0 1 12 8.485V10l2 2h1.172a2 2 0 0 1 1.414.586L18.5 14.5"/>
+            </svg>
+            <span id="hero-badge-3">Kinematic Simulators</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stats-strip">
+        <div class="stat-item">
+          <span id="stat-num-1" class="stat-number font-mono">5+</span>
+          <span id="stat-label-1" class="stat-label">Blueprints</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span id="stat-num-2" class="stat-number font-mono">2</span>
+          <span id="stat-label-2" class="stat-label">Categories</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span id="stat-num-3" class="stat-number font-mono">100%</span>
+          <span id="stat-label-3" class="stat-label">Free Templates</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span id="stat-num-4" class="stat-number font-mono">Live</span>
+          <span id="stat-label-4" class="stat-label">Physics Engine</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Catalog Filters Toolbar ── -->
+    <section id="filter-controls-region" class="reveal-on-scroll">
+      <div class="search-wrapper">
+        <svg viewBox="0 0 24 24" class="search-icon" width="16" height="16">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search cardboard crafts, Lego bricks, or tag keywords...">
+      </div>
+      <div class="filters-actions-wrapper">
+        <div class="category-filters">
+          <button id="btn-filter-cat-all" class="filter-tab active" data-category="All">All Projects</button>
+          <button id="btn-filter-cat-cardboard" class="filter-tab" data-category="Cardboard Craft">
+            <span class="emoji-spacer">📦</span> Cardboard
+          </button>
+          <button id="btn-filter-cat-lego" class="filter-tab" data-category="LEGO MOC">
+            <span class="emoji-spacer">🧩</span> LEGO MOCs
+          </button>
+        </div>
+        <div class="dropdown-wrapper">
+          <select id="filter-difficulty-select">
+            <option value="All">All Difficulties</option>
+            <option value="Easy">Easy MOCs</option>
+            <option value="Medium">Medium MOCs</option>
+            <option value="Hard">Hard MOCs</option>
+          </select>
+          <span class="dropdown-arrows">▲<br>▼</span>
+        </div>
+        <div class="dropdown-wrapper">
+          <select id="filter-access-select">
+            <option value="All">Plan: All Access</option>
+            <option value="Free">Free Only</option>
+            <option value="Premium">Premium Only</option>
+          </select>
+          <span class="dropdown-arrows">▲<br>▼</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Projects Grid ── -->
+    <section class="blueprints-container">
+      <div class="blueprints-grid-header">
+        <h3 class="section-title">
+          <svg viewBox="0 0 24 24" class="icon-small" width="16" height="16">
+            <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/>
+          </svg>
+          <span id="catalog-count-text">Blueprints Catalog (0)</span>
+        </h3>
+        <div class="grid-actions">
+          <button id="btn-toggle-pictures-view" class="btn btn-secondary select-none active" title="Toggle blueprint photos">
+            <span class="emoji-spacer">📷</span>
+            <span id="btn-pictures-view-text">Pictures: Shown</span>
+          </button>
+          <button id="btn-add-blueprint-header" class="btn btn-primary hidden">
+            <svg viewBox="0 0 24 24" class="icon" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>
+            <span>Add Custom Project</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Catalog Grid — rendered by app.js -->
+      <div id="blueprints-grid" class="blueprints-grid"></div>
+    </section>
+
+    <!-- ── Newsletter Section ── -->
+    <section class="newsletter-section reveal-on-scroll">
+      <div class="newsletter-container">
+        <div class="newsletter-info">
+          <div class="newsletter-eyebrow">
+            <svg viewBox="0 0 24 24" class="icon-small" width="14" height="14">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.62 1.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.29 6.29l.94-.94a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            Stay in the loop
+          </div>
+          <h3 class="newsletter-heading">Stay Calibrated</h3>
+          <p class="newsletter-desc">Receive curated cardboard design templates, LEGO building dimensions, and physics simulator updates directly to your inbox.</p>
+        </div>
+
+        <!-- Subscription Form -->
+        <form id="newsletter-form" action="https://formspree.io/f/YOUR_FORM_ID_HERE" method="POST" novalidate>
+          <div class="newsletter-field-group">
+            <label for="newsletter-email" class="sr-only">Email Address</label>
+            <span id="newsletter-email-hint" class="sr-only">Format: you@example.com</span>
+            <input
+              type="email"
+              id="newsletter-email"
+              name="email"
+              placeholder="Enter your email address..."
+              required
+              autocomplete="email"
+              aria-describedby="newsletter-email-hint"
+              aria-errormessage="newsletter-email-error"
+            >
+            <button type="submit" id="btn-newsletter-submit" class="btn btn-primary">
+              <span class="btn-text">SUBSCRIBE</span>
+              <span class="spinner hidden" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <!-- Inline Error -->
+          <div id="newsletter-email-error" class="error-msg hidden" role="alert">
+            <span aria-hidden="true">⚠️</span> Please enter a valid email address.
+          </div>
+
+          <!-- Status Banner -->
+          <div id="newsletter-status-banner" class="banner hidden" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer id="workshop-footer" class="reveal-on-scroll">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <svg class="icon icon-target" viewBox="0 0 24 24" width="18" height="18">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="6"/>
+          <circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span class="footer-brand-title">Tact Target Crafts Studio</span>
+        <span class="divider">|</span>
+        <span class="copyright">© 2026 Tact Target Crafts. Free templates &amp; premium designs.</span>
+      </div>
+      <div class="footer-tagline">Engage offline. Fold. Assemble. Launch.</div>
+    </div>
+  </footer>
+
+  <!-- ═══ MODAL: Step Guide & Physics Sandbox ═══ -->
+  <div id="assembly-modal-overlay" class="modal-overlay hidden">
+    <div class="modal-card">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-brand">
+          <span id="modal-header-icon-box" class="modal-icon-box"></span>
+          <div class="modal-header-title-box">
+            <h2 id="modal-title">Sentry Target Mechanism</h2>
+            <p id="modal-subtitle">Cardboard Craft • Blueprint Walkthrough</p>
+          </div>
+        </div>
+        <button id="btn-close-modal" class="modal-close-btn" title="Close Modal">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Modal Tabs -->
+      <div class="modal-tabs">
+        <button id="tab-guide-active" class="modal-tab active">🛠️ Step-by-Step Guide</button>
+        <button id="tab-test-active" class="modal-tab">🎯 Virtual Target Testing</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body-scroll">
+
+        <!-- Tab 1: Assembly Guide -->
+        <div id="tab-content-guide" class="tab-content active">
+          <div class="guide-layout">
+
+            <!-- Sidebar -->
+            <div class="guide-sidebar">
+              <div id="modal-image-container" class="sidebar-image-container">
+                <img id="modal-image" src="" alt="Project blueprint photo">
+              </div>
+              <div class="sidebar-specs">
+                <h4>Specifications</h4>
+                <div class="specs-list">
+                  <div class="spec-item">
+                    <span class="spec-label">Complexity:</span>
+                    <span id="modal-difficulty" class="spec-value">Medium</span>
+                  </div>
+                  <div class="spec-item">
+                    <span class="spec-label">Assembly Time:</span>
+                    <span id="modal-build-time" class="spec-value">45 mins</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sidebar-materials">
+                <h4>Required Materials</h4>
+                <div id="modal-materials" class="materials-tags-container"></div>
+              </div>
+              <div class="sidebar-actions">
+                <a id="btn-download-pdf-inside" href="" target="_blank" rel="noopener noreferrer" class="btn-download-blueprint">
+                  <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5"/></svg>
+                  <span id="btn-download-text">Download Free PDF Template</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Main Steps -->
+            <div class="guide-instructions-main">
+              <div class="steps-box">
+                <div class="steps-header">
+                  <span id="steps-indicator" class="steps-indicator">Step 1 of 5</span>
+                  <span class="blueprint-badge">Instruction Blueprint</span>
+                </div>
+                <p id="step-description-text" class="step-description">Assemble the target components carefully...</p>
+                <div id="steps-progress-bar" class="steps-progress-dots"></div>
+              </div>
+
+              <div class="steps-navigation">
+                <button id="btn-step-prev" class="btn btn-secondary">
+                  <svg viewBox="0 0 24 24" width="14" height="14"><path d="M15 19l-7-7 7-7"/></svg>
+                  <span>Previous Step</span>
+                </button>
+                <button id="btn-step-next" class="btn btn-primary">
+                  <span>Next Step</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14"><path d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 2: Physics Sandbox -->
+        <div id="tab-content-test" class="tab-content">
+          <div class="simulator-layout">
+
+            <!-- Scores Bar -->
+            <div class="simulator-scores-bar">
+              <div class="scores-metrics">
+                <svg viewBox="0 0 24 24" class="icon-small" width="16" height="16">
+                  <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/>
+                  <path d="M18 9h1.5a1 1 0 0 0 0-5H18M6 9H4.5a1 1 0 0 1 0-5H6M4 22h16"/>
+                </svg>
+                <span class="score-item">High Score: <strong id="highscore-value" class="score-highlight">0 pts</strong></span>
+                <span class="score-divider">|</span>
+                <span class="score-item">Recent: <strong id="recentscore-value">0 pts</strong></span>
+              </div>
+              <div class="scores-hint">
+                <svg viewBox="0 0 24 24" class="icon-small" width="14" height="14">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01"/>
+                </svg>
+                <span>Adjust angles &amp; tension power to knock down the moving target!</span>
+              </div>
+            </div>
+
+            <!-- Canvas -->
+            <div class="simulator-canvas-screen">
+              <canvas id="simulator-canvas" width="600" height="260"></canvas>
+              <div class="simulator-status-overlay">
+                <span id="simulator-status-text">Ready to test fire!</span>
+              </div>
+            </div>
+
+            <!-- Physics Controls -->
+            <div class="simulator-controls">
+              <div class="control-group">
+                <div class="control-label-row">
+                  <span class="control-title">Launch Angle:</span>
+                  <span id="angle-value-preview" class="control-value">35°</span>
+                </div>
+                <input type="range" id="launch-angle-slider" min="10" max="85" value="35" class="slider">
+                <div class="slider-labels">
+                  <span>Low (10°)</span>
+                  <span>High (85°)</span>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <div class="control-label-row">
+                  <span class="control-title">Elastic Tension (Power):</span>
+                  <span id="power-value-preview" class="control-value">55%</span>
+                </div>
+                <input type="range" id="launch-power-slider" min="15" max="100" value="55" class="slider">
+                <div class="slider-labels">
+                  <span>Soft (15%)</span>
+                  <span>Max Pull (100%)</span>
+                </div>
+              </div>
+
+              <div class="control-buttons">
+                <button id="btn-game-fire" class="btn btn-primary btn-game-launch">
+                  <svg viewBox="0 0 24 24" class="icon" width="16" height="16">
+                    <circle cx="12" cy="12" r="10"/>
+                    <circle cx="12" cy="12" r="6"/>
+                    <circle cx="12" cy="12" r="2"/>
+                  </svg>
+                  <span>LAUNCH!</span>
+                </button>
+                <button id="btn-game-reset" class="btn btn-secondary" title="Reset Target">
+                  <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                    <path d="M8 16H3v5"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Creator Admin Panel ═══ -->
+  <div id="admin-form-panel" class="modal-overlay hidden">
+    <div class="modal-card max-w-3xl">
+
+      <!-- Admin Header -->
+      <div class="modal-header">
+        <div class="modal-header-brand">
+          <span class="modal-icon-box">
+            <svg viewBox="0 0 24 24" class="icon" width="20" height="20">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
+            </svg>
+          </span>
+          <h2 id="admin-modal-title">Publish New Craft Project</h2>
+        </div>
+        <button id="btn-close-admin" class="modal-close-btn" title="Close Admin Panel">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- AI Loading Overlay (inside admin modal) -->
+      <div id="ai-loading-overlay" class="modal-overlay hidden">
+        <div class="ai-loading-card">
+          <div class="spinner"></div>
+          <h3>AI Workshop Assistant</h3>
+          <p id="ai-loading-text" class="font-mono text-sm">Initializing drafting boards...</p>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <form id="admin-blueprint-form" class="modal-body-scroll">
+
+        <!-- Banners -->
+        <div id="form-error-banner" class="banner banner-error hidden">
+          <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span id="form-error-message"></span>
+        </div>
+        <div id="form-warning-banner" class="banner banner-warning hidden">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <div class="warning-text-block">
+            <p class="font-bold">Mock Mode Active</p>
+            <p>No live Gemini API Key is loaded. Add <code class="font-mono">GEMINI_API_KEY</code> to activate full live drafting.</p>
+          </div>
+        </div>
+        <div id="form-success-banner" class="banner banner-success hidden">
+          <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="form-success-message"></span>
+        </div>
+
+        <!-- AI Prompt Box -->
+        <div class="ai-prompt-box">
+          <div class="ai-box-header">
+            <svg viewBox="0 0 24 24" class="icon" width="16" height="16">
+              <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>
+              <path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>
+            </svg>
+            <span>AI Target Craft Assistant</span>
+          </div>
+          <p class="ai-box-description">Describe your idea (e.g. <code>foam-dart targets with reset base</code>) and the assistant will draft it instantly!</p>
+          <div class="ai-prompt-input-row">
+            <input type="text" id="ai-prompt-input" placeholder="Describe your target craft launch idea...">
+            <button type="button" id="btn-generate-ai" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" class="icon" width="16" height="16">
+                <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><circle cx="4" cy="20" r="2"/>
+              </svg>
+              <span>AI Assist Draft</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Form Grid -->
+        <div class="form-grid">
+          <div class="form-group span-2">
+            <label for="project-title-input">Project Title</label>
+            <input type="text" id="project-title-input" maxlength="40" required placeholder="e.g., Automatic Score Box">
+          </div>
+
+          <div class="form-group">
+            <label for="project-category-select">Category</label>
+            <select id="project-category-select" class="select-field">
+              <option value="Cardboard Craft">📦 Cardboard Template Craft</option>
+              <option value="LEGO MOC">🧩 LEGO MOC Curation</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="project-access-select">Access Tier</label>
+            <select id="project-access-select" class="select-field">
+              <option value="Free">✨ Free Template</option>
+              <option value="Premium">💎 Premium Design</option>
+            </select>
+          </div>
+
+          <div class="form-group span-2">
+            <label for="project-desc-textarea">Short Description</label>
+            <textarea id="project-desc-textarea" rows="2" required placeholder="Describe what this target craft system does and why it is awesome to assemble physically."></textarea>
+          </div>
+
+          <!-- Blueprint Photo -->
+          <div class="form-group span-2 bg-dark-box">
+            <div class="image-box-header">
+              <label>Blueprint Photo / Image</label>
+              <button type="button" id="btn-clear-image" class="clear-image-btn hidden">Clear Image</button>
+            </div>
+
+            <div id="image-dropzone" class="image-dropzone">
+              <input type="file" id="file-upload-input" accept="image/*" class="hidden">
+              <div id="dropzone-preview" class="dropzone-preview hidden">
+                <div class="preview-thumbnail">
+                  <img id="image-preview-img" src="" alt="Thumbnail preview">
+                  <div class="thumbnail-overlay"><span>Select New File</span></div>
+                </div>
+                <span class="preview-status-text">Photo successfully linked!</span>
+              </div>
+              <div id="dropzone-prompt" class="dropzone-prompt">
+                <svg viewBox="0 0 24 24" class="icon-large" width="32" height="32"><path d="M12 13v8M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242m-8-2.242 4-4 4 4"/></svg>
+                <p class="dropzone-p">Drag and drop your craft photo here, or <span class="browse-link">browse computer</span></p>
+                <p class="dropzone-sub">Supports any JPG, PNG, GIF or WebP file</p>
+              </div>
+            </div>
+
+            <div class="image-url-row">
+              <span>Or paste a custom web image URL:</span>
+              <input type="url" id="project-image-input" placeholder="e.g., https://images.unsplash.com/...">
+            </div>
+
+            <div class="preset-images-row">
+              <span>Select professional preset photos:</span>
+              <div class="preset-buttons">
+                <button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80">📦 Cardboard Game Box</button>
+                <button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80">🛠️ Mechanical Gears</button>
+                <button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1560942485-b2a11cc13456?w=600&auto=format&fit=crop&q=80">🧩 Lego Bricks &amp; Cams</button>
+                <button type="button" class="preset-btn" data-url="https://images.unsplash.com/photo-1601049676099-e7ed07d825b0?w=600&auto=format&fit=crop&q=80">🎯 Bullseye Board Target</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="project-diff-select">Difficulty</label>
+            <select id="project-diff-select" class="select-field">
+              <option value="Easy">🟩 Easy</option>
+              <option value="Medium" selected>🟧 Medium</option>
+              <option value="Hard">🟥 Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="project-time-input">Est. Build Time</label>
+            <input type="text" id="project-time-input" placeholder="e.g., 25 mins or 2 hours" required>
+          </div>
+
+          <div class="form-group span-2">
+            <label for="project-link-input">Custom Blueprint Link</label>
+            <input type="url" id="project-link-input" placeholder="URL (e.g., Google Drive PDF, Dropbox, Youtube)">
+          </div>
+
+          <div class="form-group span-2">
+            <label for="project-materials-input">Required Materials &amp; Tools (comma separated)</label>
+            <input type="text" id="project-materials-input" required placeholder="e.g., A4 Cardboard box, hot glue, string, rubber bands, scissors, toothpicks">
+          </div>
+
+          <div class="form-group span-2">
+            <label for="project-tags-input">Grouping Tags (comma separated)</label>
+            <input type="text" id="project-tags-input" placeholder="e.g., Target, Reset, Rubber-band, Technic, Gravity">
+          </div>
+        </div>
+
+        <!-- Steps Manager -->
+        <div class="form-steps-container">
+          <div class="steps-list-header">
+            <div class="steps-title-row">
+              <label>Progress Assembly Steps</label>
+              <span class="steps-subtitle">Dynamic Steps list</span>
+            </div>
+            <button type="button" id="btn-add-step" class="btn btn-secondary btn-step-add">
+              <svg viewBox="0 0 24 24" width="12" height="12"><path d="M12 5v14M5 12h14"/></svg>
+              <span>Add Step</span>
+            </button>
+          </div>
+          <div id="form-steps-list" class="form-steps-list"></div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" id="btn-admin-cancel" class="btn btn-secondary btn-large">Cancel</button>
+          <button type="submit" id="btn-admin-save" class="btn btn-primary btn-large">Publish Craft Project</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
