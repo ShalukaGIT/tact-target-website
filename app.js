@@ -1,28 +1,8 @@
 // ═══════════════════════════════════════════════════════
-// FIREBASE MODULES & CLIENT APP INITIALIZATION
+// TACT TARGET STATIC DATA INITIALIZATION
 // ═══════════════════════════════════════════════════════
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getFirestore, doc, getDoc, setDoc, deleteDoc, 
-  collection, onSnapshot, getDocs 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { 
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-const firebaseConfig = {
-  projectId: "tact-target-website",
-  appId: "1:808664740593:web:912bb134f6983e2ab16f50",
-  storageBucket: "tact-target-website.firebasestorage.app",
-  apiKey: "AIzaSyCrBeBUZdj6lLj_CDU-sU6GUlJCEw79Tjc",
-  authDomain: "tact-target-website.firebaseapp.com",
-  messagingSenderId: "808664740593",
-  measurementId: "G-ZGCBQPFTLK"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Using data.js (TACT_TARGET_DATA) as the source of truth,
+// cached in localStorage for runtime edits.
 
 // ═══════════════════════════════════════════════════════
 // BACKGROUND PARTICLE SYSTEM
@@ -322,6 +302,7 @@ const btnPicturesText = document.getElementById("btn-pictures-view-text");
 const btnToggleAdmin = document.getElementById("btn-toggle-admin-mode");
 const adminToggleText = document.getElementById("admin-toggle-text");
 const btnFactoryReset = document.getElementById("btn-factory-reset");
+const btnExportData = document.getElementById("btn-export-data");
 const btnAddBlueprintHeader = document.getElementById("btn-add-blueprint-header");
 
 // Modal Elements
@@ -398,18 +379,8 @@ const dropzonePrompt = document.getElementById("dropzone-prompt");
 const imagePreviewImg = document.getElementById("image-preview-img");
 const btnClearImage = document.getElementById("btn-clear-image");
 
-// Authentication Elements
-const authModalPanel = document.getElementById("auth-modal-panel");
-const btnCloseAuth = document.getElementById("btn-close-auth");
-const authForm = document.getElementById("auth-form");
-const authEmailInput = document.getElementById("auth-email");
-const authPasswordInput = document.getElementById("auth-password");
-const authErrorBanner = document.getElementById("auth-error-banner");
-const authErrorMessage = document.getElementById("auth-error-message");
-const btnAuthLogout = document.getElementById("btn-auth-logout");
-
+// Authentication Elements (Removed Firebase)
 let editingBlueprintId = null;
-let currentUser = null;
 
 // Initialize Application
 function init() {
@@ -419,49 +390,25 @@ function init() {
   renderGrid();
 }
 
-// Load blueprints and state from Firestore with localStorage highscore
+// Load blueprints and state from localStorage falling back to data.js TACT_TARGET_DATA
 function loadData() {
   highscoreValue.textContent = `${highScore} pts`;
 
-  const blueprintsCol = collection(db, "blueprints");
-
-  // Prevent auto-seeding again if database was ever initialized before
-  const systemDocRef = doc(db, "settings", "system");
-  getDoc(systemDocRef).then(async (systemSnap) => {
-    let seeded = false;
-    if (systemSnap.exists()) {
-      seeded = systemSnap.data().seeded;
+  const savedBlueprints = localStorage.getItem("tact_target_blueprints");
+  if (savedBlueprints) {
+    try {
+      blueprints = JSON.parse(savedBlueprints);
+    } catch (err) {
+      console.error("Error parsing saved blueprints:", err);
+      blueprints = [...TACT_TARGET_DATA.blueprints];
     }
-
-    if (!seeded) {
-      console.log("Database not seeded yet. Seeding default blueprints...");
-      try {
-        for (const bp of initialBlueprints) {
-          await setDoc(doc(db, "blueprints", bp.id), bp);
-        }
-        await setDoc(systemDocRef, { seeded: true });
-      } catch (err) {
-        console.error("Error seeding initial blueprints:", err);
-      }
-    }
-  }).catch(err => {
-    console.error("System settings fetch error:", err);
-  });
-
-  // Listen for real-time changes to the blueprints collection
-  onSnapshot(blueprintsCol, (snapshot) => {
-    const items = [];
-    snapshot.forEach((doc) => {
-      items.push(doc.data());
-    });
-    blueprints = items;
-    renderGrid();
-  }, (error) => {
-    console.error("Firestore listener error:", error);
-  });
+  } else {
+    blueprints = [...TACT_TARGET_DATA.blueprints];
+    localStorage.setItem("tact_target_blueprints", JSON.stringify(blueprints));
+  }
 }
 
-// Save blueprints: No-op since we write directly to Firestore in saveBlueprint/deleteBlueprint
+// Save blueprints: No-op since we write directly to localStorage in saveBlueprint/deleteBlueprint
 function saveData() {}
 
 // Setup Event Listeners
@@ -500,89 +447,26 @@ function setupEventListeners() {
   });
 
   btnToggleAdmin.addEventListener("click", () => {
-    if (!currentUser) {
-      openAuthModal();
-      return;
-    }
-    isAdminMode = !isAdminMode;
-    btnToggleAdmin.classList.toggle("active", isAdminMode);
-    adminToggleText.textContent = isAdminMode ? "CREATOR VIEW: ON" : "ENTER CREATOR VIEW";
-    btnFactoryReset.classList.toggle("hidden", !isAdminMode);
-    btnAddBlueprintHeader.classList.toggle("hidden", !isAdminMode);
-    if (isAdminMode) HeroEditor.activate();
-    else HeroEditor.deactivate();
-    renderGrid();
+    toggleAdminMode();
   });
 
-  btnAuthLogout.addEventListener("click", () => {
-    signOut(auth).catch(err => console.error("Sign out error", err));
+  btnExportData.addEventListener("click", () => {
+    exportData();
   });
 
-  btnFactoryReset.addEventListener("click", async () => {
-    if (confirm("Reset catalog to factory blueprints? This will wipe your custom cardboard crafts.")) {
-      try {
-        const querySnapshot = await getDocs(collection(db, "blueprints"));
-        for (const docSnap of querySnapshot.docs) {
-          await deleteDoc(docSnap.ref);
-        }
-        for (const bp of initialBlueprints) {
-          await setDoc(doc(db, "blueprints", bp.id), bp);
-        }
-      } catch (err) {
-        console.error("Error resetting factory blueprints:", err);
-      }
+  btnFactoryReset.addEventListener("click", () => {
+    if (confirm("Reset catalog and hero text to factory defaults? This will wipe your current local browser edits.")) {
+      localStorage.removeItem("tact_target_blueprints");
+      localStorage.removeItem("tact_target_hero");
+      loadData();
+      HeroEditor.init();
+      renderGrid();
+      alert("Workspace reset to data.js defaults successfully!");
     }
   });
 
   btnAddBlueprintHeader.addEventListener("click", () => {
     openAdminForm();
-  });
-
-  // Auth Modal Listeners & Firebase Login
-  btnCloseAuth.addEventListener("click", closeAuthModal);
-  authModalPanel.addEventListener("click", (e) => {
-    if (e.target === authModalPanel) closeAuthModal();
-  });
-
-  authForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = authEmailInput.value.trim();
-    const password = authPasswordInput.value.trim();
-    try {
-      authErrorBanner.classList.add("hidden");
-      await signInWithEmailAndPassword(auth, email, password);
-      closeAuthModal();
-      isAdminMode = true;
-      btnToggleAdmin.classList.add("active");
-      adminToggleText.textContent = "CREATOR VIEW: ON";
-      btnFactoryReset.classList.remove("hidden");
-      btnAddBlueprintHeader.classList.remove("hidden");
-      HeroEditor.activate();
-      renderGrid();
-    } catch (error) {
-      console.error("Login failed", error);
-      authErrorMessage.textContent = error.message.replace("Firebase: ", "");
-      authErrorBanner.classList.remove("hidden");
-    }
-  });
-
-  // Listen to Auth State Changes
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
-    if (user) {
-      btnAuthLogout.classList.remove("hidden");
-    } else {
-      btnAuthLogout.classList.add("hidden");
-      if (isAdminMode) {
-        isAdminMode = false;
-        btnToggleAdmin.classList.remove("active");
-        adminToggleText.textContent = "ENTER CREATOR VIEW";
-        btnFactoryReset.classList.add("hidden");
-        btnAddBlueprintHeader.classList.add("hidden");
-        HeroEditor.deactivate();
-        renderGrid();
-      }
-    }
   });
 
   // Modal Assembly Events
@@ -651,9 +535,67 @@ function setupEventListeners() {
   document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "e") {
       e.preventDefault();
-      btnToggleAdmin.click();
+      toggleAdminMode();
     }
   });
+}
+
+// Toggle Creator Admin Mode via Password Prompt
+function toggleAdminMode() {
+  if (!isAdminMode) {
+    const pw = prompt("Enter Creator Password:");
+    if (pw === "tacttarget" || pw === "admin") {
+      isAdminMode = true;
+    } else {
+      if (pw !== null) alert("Incorrect password.");
+      return;
+    }
+  } else {
+    isAdminMode = false;
+  }
+  updateCreatorModeUI();
+}
+
+// Update UI display for Creator Mode
+function updateCreatorModeUI() {
+  btnToggleAdmin.classList.toggle("hidden", !isAdminMode && !btnToggleAdmin.classList.contains("active"));
+  btnToggleAdmin.classList.toggle("active", isAdminMode);
+  adminToggleText.textContent = isAdminMode ? "CREATOR VIEW: ON" : "ENTER CREATOR VIEW";
+  btnFactoryReset.classList.toggle("hidden", !isAdminMode);
+  btnExportData.classList.toggle("hidden", !isAdminMode);
+  btnAddBlueprintHeader.classList.toggle("hidden", !isAdminMode);
+  if (isAdminMode) HeroEditor.activate();
+  else HeroEditor.deactivate();
+  renderGrid();
+}
+
+// Compile and Download data.js
+function exportData() {
+  const currentHeroData = {};
+  HeroEditor.FIELDS.forEach(({ id }) => {
+    const el = document.getElementById(id);
+    if (el) currentHeroData[id] = el.textContent.trim();
+  });
+
+  const exportObject = {
+    hero: currentHeroData,
+    blueprints: blueprints.map(b => {
+      const { id, title, category, description, difficulty, buildTime, materials, link, imageUrl, steps, tags, access, isCustom } = b;
+      return { id, title, category, description, difficulty, buildTime, materials, link, imageUrl, steps, tags, access, isCustom };
+    })
+  };
+
+  const fileContent = `const TACT_TARGET_DATA = ${JSON.stringify(exportObject, null, 2)};\n`;
+
+  const blob = new Blob([fileContent], { type: "application/javascript" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "data.js";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // Drag & Drop event handlers
@@ -1155,8 +1097,14 @@ async function saveBlueprint(e) {
   };
 
   try {
-    const docRef = doc(db, "blueprints", id);
-    await setDoc(docRef, blueprintData);
+    const existingIndex = blueprints.findIndex(b => b.id === id);
+    if (existingIndex !== -1) {
+      blueprints[existingIndex] = blueprintData;
+    } else {
+      blueprints.push(blueprintData);
+    }
+    localStorage.setItem("tact_target_blueprints", JSON.stringify(blueprints));
+    renderGrid();
     closeAdminForm();
   } catch (err) {
     console.error("Error saving blueprint:", err);
@@ -1164,11 +1112,12 @@ async function saveBlueprint(e) {
   }
 }
 
-async function deleteBlueprint(id) {
+function deleteBlueprint(id) {
   if (confirm("Are you sure you want to delete this blueprint from your workspace?")) {
     try {
-      const docRef = doc(db, "blueprints", id);
-      await deleteDoc(docRef);
+      blueprints = blueprints.filter(b => b.id !== id);
+      localStorage.setItem("tact_target_blueprints", JSON.stringify(blueprints));
+      renderGrid();
     } catch (err) {
       console.error("Error deleting blueprint:", err);
       alert("Failed to delete blueprint: " + err.message);
@@ -1878,25 +1827,25 @@ const HeroEditor = {
       if (single) el.setAttribute('data-single-line', 'true');
     });
 
-    // Listen to settings/hero in Firestore
-    onSnapshot(doc(db, "settings", "hero"), (docSnap) => {
-      if (docSnap.exists()) {
-        const saved = docSnap.data();
-        Object.entries(saved).forEach(([id, text]) => {
-          const el = document.getElementById(id);
-          if (el && text) el.textContent = text;
-        });
-      } else {
-        // Seed initial values to database if settings/hero doesn't exist
-        const currentData = {};
-        this.FIELDS.forEach(({ id }) => {
-          const el = document.getElementById(id);
-          if (el) currentData[id] = el.textContent.trim();
-        });
-        setDoc(doc(db, "settings", "hero"), currentData).catch(err => console.error("Error seeding hero settings:", err));
+    // Load from localStorage or fallback to TACT_TARGET_DATA.hero
+    const savedHero = localStorage.getItem("tact_target_hero");
+    let heroData = {};
+    if (savedHero) {
+      try {
+        heroData = JSON.parse(savedHero);
+      } catch (err) {
+        console.error("Error parsing saved hero:", err);
+        heroData = TACT_TARGET_DATA.hero;
       }
-    }, (err) => {
-      console.error("Hero content Firestore listener error:", err);
+    } else {
+      heroData = TACT_TARGET_DATA.hero;
+      localStorage.setItem("tact_target_hero", JSON.stringify(heroData));
+    }
+
+    // Set text content
+    Object.entries(heroData).forEach(([id, text]) => {
+      const el = document.getElementById(id);
+      if (el && text) el.textContent = text;
     });
   },
 
@@ -1976,7 +1925,7 @@ const HeroEditor = {
       const el = document.getElementById(id);
       if (el) data[id] = el.textContent.trim();
     });
-    setDoc(doc(db, "settings", "hero"), data).catch(err => console.error("Error saving hero content:", err));
+    localStorage.setItem("tact_target_hero", JSON.stringify(data));
     this._showToast('Changes saved');
   },
 
