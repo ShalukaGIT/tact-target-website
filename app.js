@@ -394,17 +394,21 @@ function init() {
 function loadData() {
   highscoreValue.textContent = `${highScore} pts`;
 
-  const savedBlueprints = localStorage.getItem("tact_target_blueprints");
-  if (savedBlueprints) {
-    try {
-      blueprints = JSON.parse(savedBlueprints);
-    } catch (err) {
-      console.error("Error parsing saved blueprints:", err);
+  if (isAdminMode) {
+    const savedBlueprints = localStorage.getItem("tact_target_blueprints");
+    if (savedBlueprints) {
+      try {
+        blueprints = JSON.parse(savedBlueprints);
+      } catch (err) {
+        console.error("Error parsing saved blueprints:", err);
+        blueprints = [...TACT_TARGET_DATA.blueprints];
+      }
+    } else {
       blueprints = [...TACT_TARGET_DATA.blueprints];
+      localStorage.setItem("tact_target_blueprints", JSON.stringify(blueprints));
     }
   } else {
     blueprints = [...TACT_TARGET_DATA.blueprints];
-    localStorage.setItem("tact_target_blueprints", JSON.stringify(blueprints));
   }
 }
 
@@ -546,12 +550,16 @@ function toggleAdminMode() {
     const pw = prompt("Enter Creator Password:");
     if (pw === "tacttarget" || pw === "admin") {
       isAdminMode = true;
+      loadData();
+      HeroEditor.init();
     } else {
       if (pw !== null) alert("Incorrect password.");
       return;
     }
   } else {
     isAdminMode = false;
+    loadData();
+    HeroEditor.init();
   }
   updateCreatorModeUI();
 }
@@ -1828,18 +1836,22 @@ const HeroEditor = {
     });
 
     // Load from localStorage or fallback to TACT_TARGET_DATA.hero
-    const savedHero = localStorage.getItem("tact_target_hero");
     let heroData = {};
-    if (savedHero) {
-      try {
-        heroData = JSON.parse(savedHero);
-      } catch (err) {
-        console.error("Error parsing saved hero:", err);
+    if (isAdminMode) {
+      const savedHero = localStorage.getItem("tact_target_hero");
+      if (savedHero) {
+        try {
+          heroData = JSON.parse(savedHero);
+        } catch (err) {
+          console.error("Error parsing saved hero:", err);
+          heroData = TACT_TARGET_DATA.hero;
+        }
+      } else {
         heroData = TACT_TARGET_DATA.hero;
+        localStorage.setItem("tact_target_hero", JSON.stringify(heroData));
       }
     } else {
       heroData = TACT_TARGET_DATA.hero;
-      localStorage.setItem("tact_target_hero", JSON.stringify(heroData));
     }
 
     // Set text content
