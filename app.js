@@ -423,27 +423,39 @@ function init() {
 function loadData() {
   highscoreValue.textContent = `${highScore} pts`;
 
-  // Real-time listener for blueprints
   const blueprintsCol = collection(db, "blueprints");
-  onSnapshot(blueprintsCol, async (snapshot) => {
-    if (snapshot.empty) {
-      console.log("Firestore blueprints collection is empty. Seeding defaults...");
+
+  // Prevent auto-seeding again if database was ever initialized before
+  const systemDocRef = doc(db, "settings", "system");
+  getDoc(systemDocRef).then(async (systemSnap) => {
+    let seeded = false;
+    if (systemSnap.exists()) {
+      seeded = systemSnap.data().seeded;
+    }
+
+    if (!seeded) {
+      console.log("Database not seeded yet. Seeding default blueprints...");
       try {
         for (const bp of initialBlueprints) {
-          const docRef = doc(db, "blueprints", bp.id);
-          await setDoc(docRef, bp);
+          await setDoc(doc(db, "blueprints", bp.id), bp);
         }
+        await setDoc(systemDocRef, { seeded: true });
       } catch (err) {
         console.error("Error seeding initial blueprints:", err);
       }
-    } else {
-      const items = [];
-      snapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      blueprints = items;
-      renderGrid();
     }
+  }).catch(err => {
+    console.error("System settings fetch error:", err);
+  });
+
+  // Listen for real-time changes to the blueprints collection
+  onSnapshot(blueprintsCol, (snapshot) => {
+    const items = [];
+    snapshot.forEach((doc) => {
+      items.push(doc.data());
+    });
+    blueprints = items;
+    renderGrid();
   }, (error) => {
     console.error("Firestore listener error:", error);
   });
