@@ -169,7 +169,7 @@ const initialBlueprints = [
     difficulty: "Medium",
     buildTime: "45 mins",
     materials: "A4 Single-wall Cardboard, hot glue gun, 2x elastic rubber bands, wooden skewer, toothpicks",
-    link: "https://sites.google.com/view/tact-target-crafts/blueprints/sentry-target",
+    link: "https://sites.google.com/view/tack-target-crafts/blueprints/sentry-target",
     imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80",
     steps: [
       "Print or trace the PDF template onto thick corrugated cardboard sheets. Cut out all components carefully.",
@@ -189,7 +189,7 @@ const initialBlueprints = [
     difficulty: "Easy",
     buildTime: "20 mins",
     materials: "Shoebox or small parcel delivery carton, paperclips, cotton string, scrap cardboard, marker pens",
-    link: "https://sites.google.com/view/tact-target-crafts/blueprints/target-box",
+    link: "https://sites.google.com/view/tack-target-crafts/blueprints/target-box",
     imageUrl: "https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600&auto=format&fit=crop&q=80",
     steps: [
       "Cut three evenly spaced rectangular window bays on the long face of an open-top shoebox.",
@@ -209,7 +209,7 @@ const initialBlueprints = [
     difficulty: "Easy",
     buildTime: "15 mins",
     materials: "Cardboard tubes, paper cup, thin cereal board, tape, hot glue, marbles",
-    link: "https://sites.google.com/view/tact-target-crafts/blueprints/marble-flag",
+    link: "https://sites.google.com/view/tack-target-crafts/blueprints/marble-flag",
     imageUrl: "https://images.unsplash.com/photo-1601049676099-e7ed07d825b0?w=600&auto=format&fit=crop&q=80",
     steps: [
       "Cut a vertical display window out of one side of a sturdy paper towel cardboard tube.",
@@ -229,7 +229,7 @@ const initialBlueprints = [
     difficulty: "Hard",
     buildTime: "30 mins",
     materials: "34 standard Lego pieces (1x 2x4 Plate, 2x Angle 3x4 plate, Technic pin connectors, Translucent cone elements)",
-    link: "https://rebrickable.com/mocs/tact-target-crafts/interceptor-starfighter",
+    link: "https://rebrickable.com/mocs/tack-target-crafts/interceptor-starfighter",
     imageUrl: "https://images.unsplash.com/photo-1585366119957-e5733f399e7c?w=600&auto=format&fit=crop&q=80",
     steps: [
       "Assemble the central cockpit fuselage. Lay the grey 2x4 chassis plate flat and cap the front dome.",
@@ -249,7 +249,7 @@ const initialBlueprints = [
     difficulty: "Medium",
     buildTime: "25 mins",
     materials: "48 Lego pieces (11-hole Technic beam, gear wheels, 6L axle rods, connecting bushings, flat tiles)",
-    link: "https://rebrickable.com/mocs/tact-target-crafts/mechanical-reset-base",
+    link: "https://rebrickable.com/mocs/tack-target-crafts/mechanical-reset-base",
     imageUrl: "https://images.unsplash.com/photo-1560942485-b2a11cc13456?w=600&auto=format&fit=crop&q=80",
     steps: [
       "Lock together the heavy foundational plates using 1x12 stud beams to form a rigid structural base.",
@@ -634,6 +634,14 @@ function setupEventListeners() {
 
   // AI Prompt Helper
   btnGenerateAi.addEventListener("click", generateAiCraftDraft);
+
+  // Keybind listener to trigger Creator Mode login (Ctrl + Shift + E or Cmd + Shift + E)
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "e") {
+      e.preventDefault();
+      btnToggleAdmin.click();
+    }
+  });
 }
 
 // Drag & Drop event handlers
@@ -1103,7 +1111,7 @@ async function saveBlueprint(e) {
   const access = fieldAccess.value;
   const difficulty = fieldDifficulty.value;
   const buildTime = fieldBuildTime.value.trim() || "30 mins";
-  const link = fieldLink.value.trim() || (category === "LEGO MOC" ? "https://rebrickable.com/" : "https://sites.google.com/view/tact-target-crafts/");
+  const link = fieldLink.value.trim() || (category === "LEGO MOC" ? "https://rebrickable.com/" : "https://sites.google.com/view/tack-target-crafts/");
   const imageUrl = fieldImageUrl.value.trim() || undefined;
 
   // Split tags
