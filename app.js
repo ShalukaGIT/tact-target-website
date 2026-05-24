@@ -1124,7 +1124,7 @@ async function saveBlueprint(e) {
   const difficulty = fieldDifficulty.value;
   const buildTime = fieldBuildTime.value.trim() || "30 mins";
   const link = fieldLink.value.trim() || (category === "LEGO MOC" ? "https://rebrickable.com/" : "https://sites.google.com/view/tact-target-crafts/");
-  const imageUrl = fieldImageUrl.value.trim() || undefined;
+  const imageUrl = fieldImageUrl.value.trim() || "";
 
   // Split tags
   const tagsStr = fieldTags.value.trim();
